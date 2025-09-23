@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Excel Import</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <h1>Test Import Excel</h1>
+    <div id="result"></div>
+    
+    <script>
+        async function testExcelImport() {
+            try {
+                console.log('Încep testul...');
+                const response = await fetch('/assets/stock.xlsx');
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const arrayBuffer = await response.arrayBuffer();
+                console.log('ArrayBuffer size:', arrayBuffer.byteLength);
+                
+                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                console.log('Workbook sheets:', workbook.SheetNames);
+                
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                
+                console.log('Total rows:', jsonData.length);
+                console.log('Headers:', jsonData[0]);
+                console.log('First data row:', jsonData[1]);
+                
+                document.getElementById('result').innerHTML = `
+                    <h2>Rezultate:</h2>
+                    <p>Total rânduri: ${jsonData.length}</p>
+                    <p>Header-uri: ${JSON.stringify(jsonData[0])}</p>
+                    <p>Primul rând de date: ${JSON.stringify(jsonData[1])}</p>
+                `;
+                
+            } catch (error) {
+                console.error('Eroare:', error);
+                document.getElementById('result').innerHTML = `
+                    <h2>Eroare:</h2>
+                    <p style="color: red;">${error.message}</p>
+                `;
+            }
+        }
+        
+        // Rulează testul când se încarcă pagina
+        window.onload = testExcelImport;
+    </script>
+</body>
+</html>
