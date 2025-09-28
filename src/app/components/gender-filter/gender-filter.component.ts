@@ -1,9 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 export type GenderFilter = 'all' | 'boy' | 'girl';
 
 @Component({
   selector: 'app-gender-filter',
+  standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="gender-filter">
       <h3>Filtrează după gen</h3>
@@ -88,7 +91,7 @@ export class GenderFilterComponent {
   @Input() selectedFilter: GenderFilter = 'all';
   @Output() filterChange = new EventEmitter<GenderFilter>();
 
-  filterOptions = [
+  filterOptions: { value: GenderFilter; label: string; icon: string }[] = [
     { value: 'all', label: 'Toate', icon: '👥' },
     { value: 'boy', label: 'Băieți', icon: '👦' },
     { value: 'girl', label: 'Fete', icon: '👧' }

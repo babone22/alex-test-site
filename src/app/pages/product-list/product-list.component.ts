@@ -4,12 +4,13 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product.model';
-import { GenderFilterComponent, GenderFilter } from '../../components/gender-filter/gender-filter.component';
+import { FilterDropdownComponent } from '../../components/filter-dropdown/filter-dropdown.component';
+import { GenderFilter } from '../../components/gender-filter/gender-filter.component';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, GenderFilterComponent],
+  imports: [CommonModule, RouterModule, FormsModule, FilterDropdownComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -29,33 +30,26 @@ import { GenderFilterComponent, GenderFilter } from '../../components/gender-fil
         </div>
         
         <div class="filters-container">
-          <app-gender-filter 
-            [selectedFilter]="selectedGenderFilter"
-            (filterChange)="onGenderFilterChange($event)">
-          </app-gender-filter>
+          <app-filter-dropdown
+            label="Gen"
+            [options]="genderOptions"
+            [selectedValue]="selectedGenderFilter"
+            (selectionChange)="onGenderFilterChange($event)">
+          </app-filter-dropdown>
           
-          <div class="price-filters">
-            <h4>Filtrează după preț:</h4>
-            <div class="price-filter-buttons">
-              <button 
-                *ngFor="let range of priceRanges" 
-                [class.active]="selectedPriceRange === range.value"
-                (click)="onPriceRangeChange(range.value)"
-                class="price-filter-btn"
-              >
-                {{ range.label }}
-              </button>
-            </div>
-          </div>
+          <app-filter-dropdown
+            label="Preț"
+            [options]="priceRanges"
+            [selectedValue]="selectedPriceRange"
+            (selectionChange)="onPriceRangeChange($event)">
+          </app-filter-dropdown>
           
-          <div class="sort-filter">
-            <select [(ngModel)]="sortBy" (change)="onSortChange()" class="filter-select">
-              <option value="name">Sortează după nume</option>
-              <option value="price-asc">Preț crescător</option>
-              <option value="price-desc">Preț descrescător</option>
-              <option value="rating">Rating</option>
-            </select>
-          </div>
+          <app-filter-dropdown
+            label="Sortare"
+            [options]="sortOptions"
+            [selectedValue]="sortBy"
+            (selectionChange)="onSortChange($event)">
+          </app-filter-dropdown>
         </div>
       </div>
 
@@ -201,68 +195,12 @@ import { GenderFilterComponent, GenderFilter } from '../../components/gender-fil
     
     .filters-container {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-    
-    .price-filters {
-      margin-bottom: 1rem;
-      
-      h4 {
-        margin: 0 0 0.75rem 0;
-        font-size: 1rem;
-        font-weight: 600;
-        color: #374151;
-      }
-    }
-    
-    .price-filter-buttons {
-      display: flex;
+      justify-content: flex-start;
+      align-items: flex-end;
+      gap: 1.5rem;
       flex-wrap: wrap;
-      gap: 0.5rem;
     }
     
-    .price-filter-btn {
-      padding: 0.5rem 1rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 6px;
-      background: white;
-      color: #6b7280;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      
-      &:hover {
-        border-color: #3b82f6;
-        color: #3b82f6;
-      }
-      
-      &.active {
-        background: #3b82f6;
-        border-color: #3b82f6;
-        color: white;
-      }
-    }
-    
-    .sort-filter {
-      align-self: flex-start;
-    }
-    
-    .filter-select {
-      padding: 10px 12px;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      background: white;
-      cursor: pointer;
-      
-      &:focus {
-        outline: none;
-        border-color: #3b82f6;
-      }
-    }
     
     .products-grid {
       display: grid;
@@ -614,22 +552,12 @@ import { GenderFilterComponent, GenderFilter } from '../../components/gender-fil
         min-width: 20px;
       }
       
-      .price-filter-buttons {
-        gap: 0.25rem;
-      }
       
-      .price-filter-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
-      }
       
       .filters-container {
         flex-direction: column;
         gap: 1rem;
-      }
-      
-      .sort-filter {
-        align-self: flex-end;
+        align-items: stretch;
       }
     }
   `]
@@ -650,6 +578,19 @@ export class ProductListComponent implements OnInit {
     { value: '0-20', label: 'Sub 20€' },
     { value: '20-30', label: '20€ - 30€' },
     { value: '30-50', label: '30€ - 50€' }
+  ];
+
+  genderOptions = [
+    { value: 'all', label: 'Toate' },
+    { value: 'boy', label: 'Băieți' },
+    { value: 'girl', label: 'Fete' }
+  ];
+
+  sortOptions = [
+    { value: 'name', label: 'Nume' },
+    { value: 'price-asc', label: 'Preț crescător' },
+    { value: 'price-desc', label: 'Preț descrescător' },
+    { value: 'rating', label: 'Rating' }
   ];
   
   pageTitle: string = 'Toate produsele';
@@ -685,7 +626,8 @@ export class ProductListComponent implements OnInit {
     this.applyFilters();
   }
 
-  onSortChange(): void {
+  onSortChange(sortValue: string): void {
+    this.sortBy = sortValue;
     this.applySorting();
   }
 
@@ -694,8 +636,8 @@ export class ProductListComponent implements OnInit {
     this.applyFilters();
   }
 
-  onGenderFilterChange(gender: GenderFilter): void {
-    this.selectedGenderFilter = gender;
+  onGenderFilterChange(gender: string): void {
+    this.selectedGenderFilter = gender as GenderFilter;
     this.applyFilters();
   }
 
