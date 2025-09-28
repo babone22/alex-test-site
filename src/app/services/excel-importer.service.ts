@@ -159,9 +159,10 @@ export class ExcelImporterService {
     const sizeRange3 = this.findValue(rowData, ['3rd size range', '3rd_size_range']);
     const priceRange3 = this.findValue(rowData, ['3rd price range', '3rd_price_range']);
     const paia = this.parseNumber(this.findValue(rowData, ['paia', 'stoc_total', 'total_stock']));
+    const descrizioneClasse = this.findValue(rowData, ['descrizione classe', 'descrizione_classe', 'classe']);
     
     console.log(`Datele extrase:`, {
-      foto, fascia, sizeRange1, priceRange1, sizeRange2, priceRange2, sizeRange3, priceRange3, paia
+      foto, fascia, sizeRange1, priceRange1, sizeRange2, priceRange2, sizeRange3, priceRange3, paia, descrizioneClasse
     });
     
     // Generează lista de imagini pentru produs (inclusiv imagini multiple)
@@ -207,6 +208,7 @@ export class ExcelImporterService {
       tags: this.createTagsFromRow(rowData, fascia, sizeRange1),
       priceRanges: priceRanges,
       sizes: sizes,
+      gender: this.determineGender(descrizioneClasse),
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -461,7 +463,7 @@ export class ExcelImporterService {
       '2nd size range', '2nd price range', '3rd size range', '3rd price range',
       'paia', 'stoc_total', 'total_stock',
       'descrizione linea', 'descrizione modello', 'descrizione prodotto',
-      'campagna', 'descrizione tipologia', 'descrizione classe'
+      'campagna', 'descrizione tipologia'
     ];
     
     Object.keys(rowData).forEach(key => {
@@ -494,7 +496,7 @@ export class ExcelImporterService {
       '2nd size range', '2nd price range', '3rd size range', '3rd price range',
       'paia', 'stoc_total', 'total_stock',
       'descrizione linea', 'descrizione modello', 'descrizione prodotto',
-      'campagna', 'descrizione tipologia', 'descrizione classe'
+      'campagna', 'descrizione tipologia'
     ];
     
     // Informațiile despre prețuri sunt afișate în secțiunea dedicată, nu aici
@@ -529,6 +531,28 @@ export class ExcelImporterService {
     if (rowData['paia']) specs['Stoc total'] = String(rowData['paia']);
     
     return Object.keys(specs).length > 0 ? specs : undefined;
+  }
+
+  /**
+   * Determină genul produsului bazat pe coloana "Descrizione classe"
+   */
+  private determineGender(descrizioneClasse?: any): 'boy' | 'girl' | 'unisex' {
+    if (!descrizioneClasse) return 'unisex';
+    
+    const classe = String(descrizioneClasse).toLowerCase().trim();
+    
+    // Băieți: Neonato + Bambino
+    if (classe === 'neonato' || classe === 'bambino') {
+      return 'boy';
+    }
+    
+    // Fete: Neonata + Bambina
+    if (classe === 'neonata' || classe === 'bambina') {
+      return 'girl';
+    }
+    
+    // Default: unisex
+    return 'unisex';
   }
 
   /**

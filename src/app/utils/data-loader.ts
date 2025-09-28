@@ -32,6 +32,7 @@ export interface TableRow {
   disponibil?: boolean;
   rating?: number;
   recenzii?: number;
+  descrizione_classe?: string; // Coloana pentru gen (Neonato, Neonata, Bambina, Bambino)
   caracteristici?: string;
   specificatii?: string;
   taguri?: string;
@@ -63,9 +64,32 @@ export function convertTableRowToProduct(row: TableRow, index: number): Product 
     features: row.caracteristici ? row.caracteristici.split(',').map(f => f.trim()) : undefined,
     specifications: parseSpecifications(row.specificatii),
     tags: row.taguri ? row.taguri.split(',').map(t => t.trim()) : undefined,
+    gender: determineGender(row.descrizione_classe),
     createdAt: row.data_creare ? new Date(row.data_creare) : new Date(),
     updatedAt: row.data_modificare ? new Date(row.data_modificare) : new Date()
   };
+}
+
+/**
+ * Determină genul produsului bazat pe coloana "Descrizione classe"
+ */
+function determineGender(descrizioneClasse?: string): 'boy' | 'girl' | 'unisex' {
+  if (!descrizioneClasse) return 'unisex';
+  
+  const classe = descrizioneClasse.toLowerCase().trim();
+  
+  // Băieți: Neonato + Bambino
+  if (classe === 'neonato' || classe === 'bambino') {
+    return 'boy';
+  }
+  
+  // Fete: Neonata + Bambina
+  if (classe === 'neonata' || classe === 'bambina') {
+    return 'girl';
+  }
+  
+  // Default: unisex
+  return 'unisex';
 }
 
 /**

@@ -18,6 +18,7 @@ export interface Product {
   specifications?: { [key: string]: string };
   tags?: string[];
   priceRanges?: PriceRange[];
+  gender?: 'boy' | 'girl' | 'unisex'; // Genul produsului
   sizes?: ProductSize[];
   createdAt: Date;
   updatedAt: Date;
@@ -92,5 +93,6 @@ export interface ProductFilter {
   brand?: string;
   inStock?: boolean;
   search?: string;
+  gender?: 'all' | 'boy' | 'girl' | 'unisex';
 }
 

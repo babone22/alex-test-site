@@ -281,6 +281,10 @@ export class ProductService {
       products = products.filter(p => filter.inStock ? p.stock > 0 : p.stock === 0);
     }
 
+    if (filter.gender && filter.gender !== 'all') {
+      products = products.filter(p => p.gender === filter.gender);
+    }
+
     if (filter.search) {
       const searchTerm = filter.search.toLowerCase();
       products = products.filter(p => 

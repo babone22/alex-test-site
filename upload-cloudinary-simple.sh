@@ -50,11 +50,11 @@ for file in src/assets/images/*.jpg; do
         # Pauză mică între upload-uri
         sleep 1
         
-        # Upload doar primele 10 pentru test
-        if [ $count -eq 10 ]; then
-            echo "🛑 Upload oprit după 10 imagini pentru test"
-            break
-        fi
+        # Upload toate imaginile (comentat pentru test)
+        # if [ $count -eq 10 ]; then
+        #     echo "🛑 Upload oprit după 10 imagini pentru test"
+        #     break
+        # fi
     fi
 done
 

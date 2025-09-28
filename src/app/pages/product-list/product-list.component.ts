@@ -4,11 +4,12 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { Product, ProductFilter } from '../../models/product.model';
+import { GenderFilterComponent, GenderFilter } from '../../components/gender-filter/gender-filter.component';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, GenderFilterComponent],
   template: `
     <div class="container">
       <div class="page-header">
@@ -28,6 +29,11 @@ import { Product, ProductFilter } from '../../models/product.model';
         </div>
         
         <div class="filters-container">
+          <app-gender-filter 
+            [selectedFilter]="selectedGenderFilter"
+            (filterChange)="onGenderFilterChange($event)">
+          </app-gender-filter>
+          
           <div class="price-filters">
             <h4>Filtrează după preț:</h4>
             <div class="price-filter-buttons">
@@ -637,6 +643,7 @@ export class ProductListComponent implements OnInit {
   searchQuery: string = '';
   sortBy: string = 'name';
   selectedPriceRange: string = 'all';
+  selectedGenderFilter: GenderFilter = 'all';
   
   priceRanges = [
     { value: 'all', label: 'Toate prețurile' },
@@ -687,9 +694,15 @@ export class ProductListComponent implements OnInit {
     this.applyFilters();
   }
 
+  onGenderFilterChange(gender: GenderFilter): void {
+    this.selectedGenderFilter = gender;
+    this.applyFilters();
+  }
+
   private applyFilters(): void {
     const filter: ProductFilter = {
-      search: this.searchQuery || undefined
+      search: this.searchQuery || undefined,
+      gender: this.selectedGenderFilter !== 'all' ? this.selectedGenderFilter : undefined
     };
 
     this.productService.filterProducts(filter).subscribe(filtered => {
