@@ -573,18 +573,11 @@ export class ExcelImporterService {
    * Caută imagini cu sufixele _1, _2, _3, etc.
    */
   private generateProductImages(productCode: string): string[] {
-    const images: string[] = [];
+    console.log(`Generez imagini pentru produsul: ${productCode}`);
     
-    // Pentru codul produsului 8850011, generează imaginile în formatul 202528850011_1, _2, _3
-    const fullImagePrefix = `20252${productCode}`;
-    
-    // Încearcă să găsești imagini cu sufixe _1, _2, _3
-    // Adaugă doar primele 3 imagini pentru că există doar _1, _2, _3
-    for (let i = 1; i <= 3; i++) {
-      const imageName = `${fullImagePrefix}_${i}`;
-      const imagePath = `/assets/images/${imageName}.jpg`;
-      images.push(imagePath);
-    }
+    // Pentru moment, folosim doar placeholder-ul
+    // În viitor, poți încărca imaginile pe Cloudinary sau alt serviciu
+    const images: string[] = [this.getPlaceholderImage()];
     
     console.log(`Imagini generate pentru produsul ${productCode}:`, images);
     return images;
@@ -596,11 +589,10 @@ export class ExcelImporterService {
   private processImageUrl(imageUrl: any, productCode?: string): string {
     console.log('Procesez imaginea:', imageUrl, 'Tip:', typeof imageUrl, 'Cod produs:', productCode);
     
-    // Dacă avem cod produs, încercăm să găsim imaginea în folderul images
+    // Dacă avem cod produs, folosim placeholder pentru moment
     if (productCode) {
-      const localImagePath = `/assets/images/${productCode}.jpg`;
-      console.log(`Încerc să găsesc imaginea locală: ${localImagePath}`);
-      return localImagePath;
+      console.log(`Cod produs găsit: ${productCode}, folosesc placeholder`);
+      return this.getPlaceholderImage();
     }
     
     // Dacă nu există imagine sau este null/undefined
