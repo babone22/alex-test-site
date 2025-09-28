@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map, catchError, of } from 'rxjs';
 import * as XLSX from 'xlsx';
 import { Product, ProductCategory, PriceRange, ProductSize } from '../models/product.model';
+import { getCloudinaryImageUrl } from '../config/cloudinary.config';
 
 @Injectable({
   providedIn: 'root'
@@ -573,13 +574,19 @@ export class ExcelImporterService {
    * Caută imagini cu sufixele _1, _2, _3, etc.
    */
   private generateProductImages(productCode: string): string[] {
-    console.log(`Generez imagini pentru produsul: ${productCode}`);
+    const images: string[] = [];
     
-    // Pentru moment, folosim doar placeholder-ul
-    // În viitor, poți încărca imaginile pe Cloudinary sau alt serviciu
-    const images: string[] = [this.getPlaceholderImage()];
+    // Generează imagini Cloudinary pentru produs
+    const fullImagePrefix = `20252${productCode}`;
     
-    console.log(`Imagini generate pentru produsul ${productCode}:`, images);
+    // Generează imagini cu sufixe _1, _2, _3 folosind Cloudinary
+    for (let i = 1; i <= 3; i++) {
+      const imageName = `${fullImagePrefix}_${i}`;
+      const cloudinaryUrl = getCloudinaryImageUrl(`products/${imageName}.jpg`, 400, 300);
+      images.push(cloudinaryUrl);
+    }
+    
+    console.log(`Imagini Cloudinary generate pentru produsul ${productCode}:`, images);
     return images;
   }
 
@@ -589,10 +596,11 @@ export class ExcelImporterService {
   private processImageUrl(imageUrl: any, productCode?: string): string {
     console.log('Procesez imaginea:', imageUrl, 'Tip:', typeof imageUrl, 'Cod produs:', productCode);
     
-    // Dacă avem cod produs, folosim placeholder pentru moment
+    // Dacă avem cod produs, folosim Cloudinary
     if (productCode) {
-      console.log(`Cod produs găsit: ${productCode}, folosesc placeholder`);
-      return this.getPlaceholderImage();
+      const cloudinaryUrl = getCloudinaryImageUrl(`products/${productCode}.jpg`, 400, 300);
+      console.log(`Folosesc Cloudinary pentru: ${productCode} -> ${cloudinaryUrl}`);
+      return cloudinaryUrl;
     }
     
     // Dacă nu există imagine sau este null/undefined
