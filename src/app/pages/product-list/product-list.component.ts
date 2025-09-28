@@ -38,6 +38,13 @@ import { GenderFilter } from '../../components/gender-filter/gender-filter.compo
           </app-filter-dropdown>
           
           <app-filter-dropdown
+            label="Categorie"
+            [options]="categoryOptions"
+            [selectedValue]="selectedCategory"
+            (selectionChange)="onCategoryChange($event)">
+          </app-filter-dropdown>
+          
+          <app-filter-dropdown
             label="Preț"
             [options]="priceRanges"
             [selectedValue]="selectedPriceRange"
@@ -572,6 +579,7 @@ export class ProductListComponent implements OnInit {
   sortBy: string = 'name';
   selectedPriceRange: string = 'all';
   selectedGenderFilter: GenderFilter = 'all';
+  selectedCategory: string = 'all';
   
   priceRanges = [
     { value: 'all', label: 'Toate prețurile' },
@@ -591,6 +599,14 @@ export class ProductListComponent implements OnInit {
     { value: 'price-asc', label: 'Preț crescător' },
     { value: 'price-desc', label: 'Preț descrescător' },
     { value: 'rating', label: 'Rating' }
+  ];
+
+  categoryOptions = [
+    { value: 'all', label: 'Toate categoriile' },
+    { value: 'Balerinii', label: 'Balerinii' },
+    { value: 'Ghete', label: 'Ghete' },
+    { value: 'Pantofi Sport', label: 'Pantofi Sport' },
+    { value: 'Cizme', label: 'Cizme' }
   ];
   
   pageTitle: string = 'Toate produsele';
@@ -641,10 +657,16 @@ export class ProductListComponent implements OnInit {
     this.applyFilters();
   }
 
+  onCategoryChange(category: string): void {
+    this.selectedCategory = category;
+    this.applyFilters();
+  }
+
   private applyFilters(): void {
     const filter: ProductFilter = {
       search: this.searchQuery || undefined,
-      gender: this.selectedGenderFilter !== 'all' ? this.selectedGenderFilter : undefined
+      gender: this.selectedGenderFilter !== 'all' ? this.selectedGenderFilter : undefined,
+      category: this.selectedCategory !== 'all' ? this.selectedCategory : undefined
     };
 
     this.productService.filterProducts(filter).subscribe(filtered => {

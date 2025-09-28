@@ -160,9 +160,10 @@ export class ExcelImporterService {
     const priceRange3 = this.findValue(rowData, ['3rd price range', '3rd_price_range']);
     const paia = this.parseNumber(this.findValue(rowData, ['paia', 'stoc_total', 'total_stock']));
     const descrizioneClasse = this.findValue(rowData, ['descrizione classe', 'descrizione_classe', 'classe']);
+    const descrizioneTipologia = this.findValue(rowData, ['descrizione tipologia', 'descrizione_tipologia', 'tipologia']);
     
     console.log(`Datele extrase:`, {
-      foto, fascia, sizeRange1, priceRange1, sizeRange2, priceRange2, sizeRange3, priceRange3, paia, descrizioneClasse
+      foto, fascia, sizeRange1, priceRange1, sizeRange2, priceRange2, sizeRange3, priceRange3, paia, descrizioneClasse, descrizioneTipologia
     });
     
     // Generează lista de imagini pentru produs (inclusiv imagini multiple)
@@ -195,7 +196,7 @@ export class ExcelImporterService {
       originalPrice: undefined,
       image: processedImage || this.getPlaceholderImage(),
       images: productImages.length > 0 ? productImages : [processedImage || this.getPlaceholderImage()],
-      category: fascia || 'General',
+      category: this.determineCategory(descrizioneTipologia) || fascia || 'General',
       subcategory: sizeRange1,
       brand: undefined,
       sku: String(codiceProdotto),
@@ -531,6 +532,32 @@ export class ExcelImporterService {
     if (rowData['paia']) specs['Stoc total'] = String(rowData['paia']);
     
     return Object.keys(specs).length > 0 ? specs : undefined;
+  }
+
+  /**
+   * Determină categoria produsului bazat pe coloana "Descrizione tipologia"
+   */
+  private determineCategory(descrizioneTipologia?: any): string | undefined {
+    if (!descrizioneTipologia) return undefined;
+    
+    const tipologia = String(descrizioneTipologia).toLowerCase().trim();
+    
+    // Maparea tipologiilor la categorii
+    switch (tipologia) {
+      case 'ballerina':
+        return 'Balerinii';
+      case 'polacco':
+      case 'tronchetto':
+        return 'Ghete';
+      case 'scarpa':
+      case 'scarpa alta':
+        return 'Pantofi Sport';
+      case 'stivale':
+      case 'stivaletto':
+        return 'Cizme';
+      default:
+        return undefined;
+    }
   }
 
   /**
