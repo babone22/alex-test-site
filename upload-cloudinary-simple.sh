@@ -25,14 +25,19 @@ for file in src/assets/images/*.jpg; do
         
         echo "⬆️  [$count/$total] Upload: $filename"
         
-        # Upload folosind curl și API-ul Cloudinary
+        # Generează signature pentru upload semnat
+        timestamp=$(date +%s)
+        signature_string="public_id=${filename%.*}&timestamp=$timestamp$API_SECRET"
+        signature=$(echo -n "$signature_string" | shasum -a 1 | cut -d' ' -f1)
+        
+        # Upload folosind curl și API-ul Cloudinary cu signature
         response=$(curl -s -X POST \
             "https://api.cloudinary.com/v1_1/$CLOUD_NAME/image/upload" \
             -F "file=@$file" \
-            -F "public_id=products/${filename%.*}" \
-            -F "folder=products" \
+            -F "public_id=${filename%.*}" \
             -F "api_key=$API_KEY" \
-            -F "timestamp=$(date +%s)")
+            -F "timestamp=$timestamp" \
+            -F "signature=$signature")
         
         # Verifică dacă upload-ul a fost cu succes
         if echo "$response" | grep -q '"public_id"'; then

@@ -10,7 +10,9 @@ export const CLOUDINARY_URL_TEMPLATE = 'https://res.cloudinary.com/{cloudName}/i
 
 // Funcție pentru generarea URL-urilor Cloudinary
 export function getCloudinaryImageUrl(imagePath: string, width: number = 400, height: number = 300): string {
-  return `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/image/upload/w_${width},h_${height},f_auto,q_auto/${imagePath}`;
+  // Elimină extensia din imagePath
+  const publicId = imagePath.replace(/\.(jpg|jpeg|png|gif)$/i, '');
+  return `https://res.cloudinary.com/${CLOUDINARY_CONFIG.cloudName}/image/upload/w_${width},h_${height},f_auto,q_auto/${publicId}`;
 }
 
 // Funcție pentru upload imagini (pentru viitor)

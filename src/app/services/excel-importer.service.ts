@@ -582,7 +582,7 @@ export class ExcelImporterService {
     // Generează imagini cu sufixe _1, _2, _3 folosind Cloudinary
     for (let i = 1; i <= 3; i++) {
       const imageName = `${fullImagePrefix}_${i}`;
-      const cloudinaryUrl = getCloudinaryImageUrl(`products/${imageName}.jpg`, 400, 300);
+      const cloudinaryUrl = getCloudinaryImageUrl(`${imageName}.jpg`, 400, 300);
       images.push(cloudinaryUrl);
     }
     
@@ -598,7 +598,7 @@ export class ExcelImporterService {
     
     // Dacă avem cod produs, folosim Cloudinary
     if (productCode) {
-      const cloudinaryUrl = getCloudinaryImageUrl(`products/${productCode}.jpg`, 400, 300);
+      const cloudinaryUrl = getCloudinaryImageUrl(`${productCode}.jpg`, 400, 300);
       console.log(`Folosesc Cloudinary pentru: ${productCode} -> ${cloudinaryUrl}`);
       return cloudinaryUrl;
     }
