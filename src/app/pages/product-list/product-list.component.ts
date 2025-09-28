@@ -603,7 +603,7 @@ export class ProductListComponent implements OnInit {
 
   categoryOptions = [
     { value: 'all', label: 'Toate categoriile' },
-    { value: 'Balerinii', label: 'Balerinii' },
+    { value: 'Balerini', label: 'Balerini' },
     { value: 'Ghete', label: 'Ghete' },
     { value: 'Pantofi Sport', label: 'Pantofi Sport' },
     { value: 'Cizme', label: 'Cizme' }

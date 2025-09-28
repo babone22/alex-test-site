@@ -545,7 +545,7 @@ export class ExcelImporterService {
     // Maparea tipologiilor la categorii
     switch (tipologia) {
       case 'ballerina':
-        return 'Balerinii';
+        return 'Balerini';
       case 'polacco':
       case 'tronchetto':
         return 'Ghete';
